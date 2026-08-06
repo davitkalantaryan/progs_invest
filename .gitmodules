@@ -1,6 +1,3 @@
-[submodule "contrib/cinternal"]
-	path = contrib/cinternal
-	url = https://github.com/davitkalantaryan/cinternal.git
 [submodule "contrib/cutils"]
 	path = contrib/cutils
 	url = https://github.com/davitkalantaryan/cutils.git
