@@ -14,6 +14,7 @@
 #ifdef PROGS_INVEST_STACK_CALCS_USED
 
 #include <progs_invest/export_symbols.h>
+#include <progs_invest/types01.h>
 #include <cinternal/disable_compiler_warnings.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -22,16 +23,14 @@
 
 CPPUTILS_BEGIN_C
 
-typedef void* (*TypeProgramsInvestMalloc)(size_t);
-typedef void  (*TypeProgramsInvestFree)(void*);
-
 
 struct SProgramsInvesigatorStack;
-ALLOCFREEHOOK_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeProgramsInvestMalloc a_malloc, TypeProgramsInvestFree a_free) CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesigatorStack* a_stack) CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT size_t ProgramsInvestigatorStackGetHash(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT bool ProgramsInvestigatorStackAreSame(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack1, const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack2) CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT;
+
+PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeAllocFreeHookMalloc a_malloc, TypeAllocFreeHookFree a_free) CPPUTILS_NOEXCEPT;
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesigatorStack* a_stack) CPPUTILS_NOEXCEPT;
+PROGSINVEST_STACKCALCS_EXPORT size_t ProgramsInvestigatorStackGetHash(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT;
+PROGSINVEST_STACKCALCS_EXPORT bool ProgramsInvestigatorStackAreSame(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack1, const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack2) CPPUTILS_NOEXCEPT;
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT;
 
 
 CPPUTILS_END_C

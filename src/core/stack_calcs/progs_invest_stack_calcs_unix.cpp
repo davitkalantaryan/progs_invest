@@ -31,7 +31,7 @@ struct SProgramsInvesigatorStack{
     int                     numberOfFrames;
     int                     reserved01;
     void**                  ppFrames;
-    TypeProgramsInvestFree  m_free;
+    TypeAllocFreeHookFree   m_free;
 };
 
 
@@ -47,11 +47,11 @@ static void ProgramsInvestStackCalcDefaultFree(void* a_ptr) CPPUTILS_NOEXCEPT
 }
 
 
-PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeProgramsInvestMalloc a_malloc, TypeProgramsInvestFree a_free) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeAllocFreeHookMalloc a_malloc, TypeAllocFreeHookFree a_free) CPPUTILS_NOEXCEPT
 {
     int numberOfFrames;
-    const TypeProgramsInvestMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
-    const TypeProgramsInvestFree aFree = a_free ? a_free : (&ProgramsInvestStackCalcDefaultFree);
+    const TypeAllocFreeHookMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
+    const TypeAllocFreeHookFree aFree = a_free ? a_free : (&ProgramsInvestStackCalcDefaultFree);
     struct SProgramsInvesigatorStack* pRet = CPPUTILS_NULL;
     void* vpStackFramesTmp[PROGRAMS_INVEST_MAX_STACK];
     const int cnNumberOfFramesPerThisStack = backtrace(vpStackFramesTmp,PROGRAMS_INVEST_MAX_STACK);
@@ -83,7 +83,7 @@ PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestig
 PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesigatorStack* a_stack) CPPUTILS_NOEXCEPT
 {
     if(a_stack){
-        const TypeProgramsInvestFree aFree = a_stack->m_free;
+        const TypeAllocFreeHookFree aFree = a_stack->m_free;
         (*aFree)(a_stack->ppFrames);
         (*aFree)(a_stack);
     }  //  if(a_stack){
