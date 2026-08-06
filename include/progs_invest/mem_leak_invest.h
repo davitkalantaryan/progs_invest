@@ -23,27 +23,30 @@
 CPPUTILS_BEGIN_C
 
 
-struct SProgsInvestMemLeakInvestStat{
+struct SProgsInvestMemLeakInvestSettings{
     int     maxAllocs;
-    int     numberOfEvents;
-    int     allocsMax;
     int     reserved01;
+};
+
+
+struct SProgsInvestMemLeakInvestStatus {
+    int     numberOfEvents;
+    int     allocsMaxUpToNow;
     int64_t memoryAllocatedInBytes;
     int64_t allocatedItemsCount;
 };
 
 
 typedef void (*TypeProgsInvestMemLeakInvestClbk)(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_curStack,
-                                                 const struct SProgsInvestMemLeakInvestStat* CPPUTILS_ARG_NN a_memCurStat,
                                                  void* a_pUserData,
                                                  void** a_pDataForCurThread);
 
 
 PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NOEXCEPT;
 PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_NOEXCEPT;
-PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT;
 PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT;
-PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT struct SProgsInvestMemLeakInvestSettings* ProgsInvestMemLeakInvestSettingsPtr(void)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStatus* ProgsInvestMemLeakInvestStatusPtr(void)CPPUTILS_NOEXCEPT;
 
 
 CPPUTILS_END_C

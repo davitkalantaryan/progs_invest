@@ -262,6 +262,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\utils\entry_progs_invest_all.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\.gitattributes" />
+    <None Include="..\..\.gitignore" />
+    <None Include="..\..\.gitmodules" />
+    <None Include="..\..\LICENSE" />
+    <None Include="..\..\README.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

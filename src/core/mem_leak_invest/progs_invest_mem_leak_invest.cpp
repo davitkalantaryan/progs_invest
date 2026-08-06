@@ -72,7 +72,6 @@ static bool ProgsInvestMemLeakInvesStoreKeyByStack(TypeCinternalAllocator a_allo
 static void ProgsInvestMemLeakInvesUnstoreKeyByStack(TypeCinternalDeallocator a_deallocator, void* a_key, size_t a_keySize) CPPUTILS_NOEXCEPT;
 static void ProgsInvestMemLeakInvestTlsClean(void* a_tls) CPPUTILS_NOEXCEPT;
 static void ProgsInvestMemLeakInvestDefaultClbk(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_curStack,
-                                                const struct SProgsInvestMemLeakInvestStat* CPPUTILS_ARG_NN a_memCurStat,
                                                 void* a_pUserData,
                                                 void** a_pDataForCurThread) CPPUTILS_NOEXCEPT;
 
@@ -85,7 +84,8 @@ static cinternal_lw_recursive_mutex_t   s_hashMutex;
 static CinternalHash_t  s_hashByStack = CPPUTILS_NULL;
 static CinternalHash_t  s_hashByMemory = CPPUTILS_NULL;
 static CinternalTlsData s_tlsData = (CinternalTlsData)0;
-static struct SProgsInvestMemLeakInvestStat s_dt = {};
+static struct SProgsInvestMemLeakInvestSettings s_sett = {};
+static struct SProgsInvestMemLeakInvestStatus s_stat = {};
 static bool s_bIsHookActive = false;
 static bool s_bModuleExitStarted = false;
 static void* s_pUserData = CPPUTILS_NULL;
@@ -103,12 +103,12 @@ static inline struct SProgsInvestMemLeakInvestTls* ProgsInvestMemLeakInvestGetTl
 
 
 static inline void AnalyzeStackSituationInline(struct SProgsInvestMemLeakStackItem* CPPUTILS_ARG_NN a_pStackData) CPPUTILS_NOEXCEPT {
-    if((a_pStackData->allocsCount)>(s_dt.allocsMax)){
-        s_dt.allocsMax = a_pStackData->allocsCount;
-        if((a_pStackData->allocsCount)>(s_dt.maxAllocs)){
+    if((a_pStackData->allocsCount)>(s_stat.allocsMaxUpToNow)){ 
+        s_stat.allocsMaxUpToNow = a_pStackData->allocsCount;
+        if((a_pStackData->allocsCount)>(s_sett.maxAllocs)){
             struct SProgsInvestMemLeakInvestTls* const pTls = ProgsInvestMemLeakInvestGetTlsPtrInline();
-            ++(s_dt.numberOfEvents);
-            (*s_eventClbk)(a_pStackData->pStack,&s_dt,s_pUserData,&(pTls->pUserData));
+            ++(s_stat.numberOfEvents);
+            (*s_eventClbk)(a_pStackData->pStack,s_pUserData,&(pTls->pUserData));
         }  //  if((a_pStackData->allocsCount)>s_maxAllocs){
     }  //  if((a_pStackData->allocsCount)>snMax){
 }
@@ -130,11 +130,11 @@ static inline void ProgsInvestMemLeakIestInitInline(void) CPPUTILS_NOEXCEPT {
     s_eventClbk = &ProgsInvestMemLeakInvestDefaultClbk;
     s_bModuleExitStarted = false;
     s_bIsHookActive = false;
-    s_dt.maxAllocs = PROGS_INVEST_MEM_LEAK_AN_MAX_ALLOC_DEF;
-    s_dt.numberOfEvents = 0;
-    s_dt.allocsMax = 0;
-    s_dt.memoryAllocatedInBytes = 0;
-    s_dt.allocatedItemsCount = 0;
+    s_sett.maxAllocs = PROGS_INVEST_MEM_LEAK_AN_MAX_ALLOC_DEF;
+    s_stat.numberOfEvents = 0;
+    s_stat.allocsMaxUpToNow = 0;
+    s_stat.memoryAllocatedInBytes = 0;
+    s_stat.allocatedItemsCount = 0;
 
     s_mallocInitial = AllocFreeHookGetMallocFnc();
     s_callocInitial = AllocFreeHookGetCallocFnc();
@@ -210,13 +210,6 @@ PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(vo
 }
 
 
-PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT
-{
-    ProgsInvestMemLeakIestInitInline();
-    s_dt.maxAllocs = a_maxAllocs;
-}
-
-
 PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT
 {
     ProgsInvestMemLeakIestInitInline();
@@ -225,10 +218,17 @@ PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeP
 }
 
 
-PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT struct SProgsInvestMemLeakInvestSettings* ProgsInvestMemLeakInvestSettingsPtr(void)CPPUTILS_NOEXCEPT
 {
     ProgsInvestMemLeakIestInitInline();
-    return &s_dt;
+    return &s_sett;
+}
+
+
+PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStatus* ProgsInvestMemLeakInvestStatusPtr(void)CPPUTILS_NOEXCEPT
+{
+    ProgsInvestMemLeakIestInitInline();
+    return &s_stat;
 }
 
 
@@ -297,12 +297,10 @@ static void ProgsInvestMemLeakInvestFree(void* a_ptr) CPPUTILS_NOEXCEPT
 /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 static void ProgsInvestMemLeakInvestDefaultClbk(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_curStack,
-                                                const struct SProgsInvestMemLeakInvestStat* CPPUTILS_ARG_NN a_memCurStat,
                                                 void* a_pUserData,
                                                 void** a_pDataForCurThread) CPPUTILS_NOEXCEPT
 {
     (void)a_curStack;
-    (void)a_memCurStat;
     (void)a_pUserData;
     (void)a_pDataForCurThread;
 }
@@ -363,8 +361,8 @@ static inline int ProgsInvestMemLeakInvestAddMemoryInlineNoLock(struct SPrograms
             // todo:
             return 1;
         }
-        s_dt.memoryAllocatedInBytes += ((int64_t)a_size);
-        ++(s_dt.allocatedItemsCount);
+        s_stat.memoryAllocatedInBytes += ((int64_t)a_size);
+        ++(s_stat.allocatedItemsCount);
     }
 
     return 0;
@@ -416,8 +414,8 @@ static inline void ProgsInvestMemLeakInvestRemMemoryInlineNoLock(void* CPPUTILS_
             unHashByStack = hashByStack->count;
         }  //  if((--(pStackData->allocsCount))<1){
         CInternalHashRemoveDataEx(s_hashByMemory,itemyMem);
-        s_dt.memoryAllocatedInBytes -= ((int64_t)(pMemData->m_size));
-        --(s_dt.allocatedItemsCount);
+        s_stat.memoryAllocatedInBytes -= ((int64_t)(pMemData->m_size));
+        --(s_stat.allocatedItemsCount);
         AllocFreeHookCLibFree(pMemData);
         if(s_bModuleExitStarted && (unHashByStack<1)){
             const CinternalHashConstBasic_t hashByMemory = CinternalHashGetBasic(s_hashByMemory);
