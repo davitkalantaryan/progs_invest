@@ -1,0 +1,4 @@
+
+
+  progsInvestRepoRoot
+  $(MSBuildThisFileDirectory)..\..\..

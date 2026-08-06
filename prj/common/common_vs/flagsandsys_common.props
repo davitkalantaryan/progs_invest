@@ -4,7 +4,6 @@
     <Import Project="..\..\..\contrib\cinternal\prj\common\common_vs\flagsandsys_common.props" />
     <Import Project="flagsandsys_common_pure.props" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <PreBuildEvent>
       <Command>
@@ -19,5 +18,6 @@
       </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup />
+  <ItemGroup>
+  </ItemGroup>
 </Project>
