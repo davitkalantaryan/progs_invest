@@ -17,7 +17,7 @@ include ( "$${PWD}/../../prj/common/common_qt/flagsandsys_common.pri" )
 
 #SUBDIRS		+=	"$${progsInvestRepoRoot}/prj/tests/any_quick_test_qt/any_quick_test.pro"
 #SUBDIRS		+=	"$${progsInvestRepoRoot}/prj/tests/cpputils_unit_test_mult/cpputils_unit_test.pro"
-SUBDIRS	+= "$${progsInvestRepoRoot}/workspaces/cinternal_all_qt/cinternal_all.pro"
+SUBDIRS	+= "$${cutilsRepoRoot}/workspaces/cutils_all_qt/cutils_all.pro"
 
 OTHER_FILES += $$files($${progsInvestRepoRoot}/docs/*.md,true)
 OTHER_FILES += $$files($${progsInvestRepoRoot}/docs/*.txt,true)

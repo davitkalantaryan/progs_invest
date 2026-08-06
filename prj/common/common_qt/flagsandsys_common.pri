@@ -22,7 +22,7 @@ isEmpty(progsInvestFlagsAndSysCommonIncluded){
 	}
     }
 
-    include("$${progsInvestRepoRoot}/contrib/cinternal/prj/common/common_qt/flagsandsys_common.pri")
+    include("$${progsInvestRepoRoot}/contrib/cutils/prj/common/common_qt/flagsandsys_common_private.pri")
 
     INCLUDEPATH += $${progsInvestRepoRoot}/include
 
