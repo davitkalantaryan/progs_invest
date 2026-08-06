@@ -1,3 +1,10 @@
+
+
+#include <progs_invest/internal_header.h>
+
+#ifdef PROGS_INVEST_STACK_CALCS_USED
+#ifndef _WIN32
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -189,3 +196,7 @@ void printBacktraceSourceLines(void* const* frames, int count)
 
     std::free(fallbackSymbols);
 }
+
+
+#endif  //  #ifndef _WIN32
+#endif  //  #ifdef PROGS_INVEST_STACK_CALCS_USED

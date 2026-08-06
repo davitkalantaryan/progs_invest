@@ -8,7 +8,7 @@
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_STACK_CALCS_USED
 #ifndef _WIN32
 
 #include <progs_invest/stack_calcs.h>
@@ -47,7 +47,7 @@ static void ProgramsInvestStackCalcDefaultFree(void* a_ptr) CPPUTILS_NOEXCEPT
 }
 
 
-ALLOCFREEHOOK_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeProgramsInvestMalloc a_malloc, TypeProgramsInvestFree a_free) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackGetCurrent(int a_goBackInTheStackCalc, TypeProgramsInvestMalloc a_malloc, TypeProgramsInvestFree a_free) CPPUTILS_NOEXCEPT
 {
     int numberOfFrames;
     const TypeProgramsInvestMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
@@ -80,7 +80,7 @@ ALLOCFREEHOOK_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStack
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesigatorStack* a_stack) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesigatorStack* a_stack) CPPUTILS_NOEXCEPT
 {
     if(a_stack){
         const TypeProgramsInvestFree aFree = a_stack->m_free;
@@ -90,7 +90,7 @@ ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackFree(struct SProgramsInvesiga
 }
 
 
-ALLOCFREEHOOK_EXPORT size_t ProgramsInvestigatorStackGetHash(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT size_t ProgramsInvestigatorStackGetHash(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
 {
     size_t unReturn = 0;
     size_t koef = 1;
@@ -103,7 +103,7 @@ ALLOCFREEHOOK_EXPORT size_t ProgramsInvestigatorStackGetHash(const struct SProgr
 }
 
 
-ALLOCFREEHOOK_EXPORT bool ProgramsInvestigatorStackAreSame(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack1, const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack2) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT bool ProgramsInvestigatorStackAreSame(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack1, const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack2) CPPUTILS_NOEXCEPT
 {
     int ind;
     if((a_stack1->numberOfFrames) != (a_stack2->numberOfFrames)){
@@ -118,7 +118,7 @@ ALLOCFREEHOOK_EXPORT bool ProgramsInvestigatorStackAreSame(const struct SProgram
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
 {
     //char** strings = backtrace_symbols(a_stack->ppFrames, a_stack->numberOfFrames);
     //if(strings){
@@ -134,4 +134,4 @@ CPPUTILS_END_C
 
 
 #endif  //  #ifndef _WIN32
-#endif  //  #ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#endif  //  #ifdef PROGS_INVEST_STACK_CALCS_USED

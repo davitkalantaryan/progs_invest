@@ -1,16 +1,17 @@
 //
-// file:			alloc_free_hook.h
-// path:			include/allocfreehook/alloc_free_hook.h
+// repo:            progs_invest
+// file:			stack_calcs.h
+// path:			include/progs_invest/stack_calcs.h
 // created on:		2023 Mar 08
-// created by:		Davit Kalantaryan (davit.kalantaryan@gmail.com)
+// created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
 
-#ifndef ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_STACK_CALCS_H
-#define ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_STACK_CALCS_H
+#ifndef PROGS_INVEST_INCLUDE_PROGS_INVEST_STACK_CALCS_H
+#define PROGS_INVEST_INCLUDE_PROGS_INVEST_STACK_CALCS_H
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_STACK_CALCS_USED
 
 #include <progs_invest/export_symbols.h>
 #include <cinternal/disable_compiler_warnings.h>
@@ -36,6 +37,6 @@ ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsI
 CPPUTILS_END_C
 
 
-#endif  //  #ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#endif  //  #ifdef PROGS_INVEST_STACK_CALCS_USED
 
-#endif  // #ifndef ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_ALLOC_FREE_HOOK_H
+#endif  // #ifndef PROGS_INVEST_INCLUDE_PROGS_INVEST_STACK_CALCS_H

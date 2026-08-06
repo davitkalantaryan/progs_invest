@@ -8,7 +8,7 @@
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_MEM_LEAK_INVEST_USED
 
 #ifndef cinternal_lw_recursive_mutex_create_needed
 #define cinternal_lw_recursive_mutex_create_needed
@@ -522,7 +522,7 @@ static void ProgsInvestMemLeakInvestTlsClean(void* a_tls) CPPUTILS_NOEXCEPT
 /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 CPPUTILS_C_CODE_INITIALIZER(programs_investigator_mem_leak_invest_init){
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED_AUTO_INIT
+#ifdef PROGS_INVEST_MEM_LEAK_INVEST_AUTO_INIT_USED
     ProgsInvestMemLeakIestInitInline();
 #endif
 }

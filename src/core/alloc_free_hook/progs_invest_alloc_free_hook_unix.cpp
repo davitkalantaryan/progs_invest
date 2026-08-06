@@ -1,6 +1,7 @@
 //
-// file:			alloc_free_hook_core_alloc_free_hook_unix.c
-// path:			src/core/alloc_free_hook_core_alloc_free_hook_unix.c
+// repo:            progs_invest
+// file:			progs_invest_alloc_free_hook_unix.cpp
+// path:			src/core/alloc_free_hook/progs_invest_alloc_free_hook_unix.cpp
 // created on:		2023 Mar 14
 // created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
@@ -8,7 +9,7 @@
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_ALLOC_FREE_HOOK_USED
 #ifndef _WIN32
 
 #include <progs_invest/alloc_free_hook.h>

@@ -8,7 +8,7 @@
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_ALLOC_FREE_HOOK_USED
 #ifndef _WIN32
 
 #include <progs_invest/alloc_free_hook.h>
@@ -110,34 +110,34 @@ static inline void InitLibraryIfNotInitedInline(void) CPPUTILS_NOEXCEPT{
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorAllocFreeHookInitLibraryIfNotInited(void) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorAllocFreeHookInitLibraryIfNotInited(void) CPPUTILS_NOEXCEPT
 {
     InitLibraryIfNotInitedInline();
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetMallocFnc(TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetMallocFnc(TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT
 {
     InitLibraryIfNotInitedInline();
     g_malloc = a_malloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetCallocFnc(TypeAllocFreeHookCalloc a_calloc) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetCallocFnc(TypeAllocFreeHookCalloc a_calloc) CPPUTILS_NOEXCEPT
 {
     InitLibraryIfNotInitedInline();
     g_calloc = a_calloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetReallocFnc(TypeAllocFreeHookRealloc a_realloc) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetReallocFnc(TypeAllocFreeHookRealloc a_realloc) CPPUTILS_NOEXCEPT
 {
     InitLibraryIfNotInitedInline();
     s_realloc_user = a_realloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free) CPPUTILS_NOEXCEPT
 {
     InitLibraryIfNotInitedInline();
     s_free_user = a_free;
@@ -146,25 +146,25 @@ ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free) 
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibMalloc(size_t a_size) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibMalloc(size_t a_size) CPPUTILS_NOEXCEPT
 {
     return (*s_malloc_c_lib)(a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibCalloc(size_t a_nmemb, size_t a_size) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibCalloc(size_t a_nmemb, size_t a_size) CPPUTILS_NOEXCEPT
 {
     return (*s_calloc_c_lib)(a_nmemb,a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibRealloc(void* a_ptr, size_t a_size) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibRealloc(void* a_ptr, size_t a_size) CPPUTILS_NOEXCEPT
 {
     return (*s_realloc_c_lib)(a_ptr,a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr) CPPUTILS_NOEXCEPT
 {
     (*s_free_c_lib)(a_ptr);
 }
@@ -172,25 +172,25 @@ ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr) CPPUTILS_NOEXCEPT
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookMalloc AllocFreeHookGetMallocFnc(void) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookMalloc AllocFreeHookGetMallocFnc(void) CPPUTILS_NOEXCEPT
 {
     return g_malloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookCalloc AllocFreeHookGetCallocFnc(void) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookCalloc AllocFreeHookGetCallocFnc(void) CPPUTILS_NOEXCEPT
 {
     return g_calloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookRealloc AllocFreeHookGetReallocFnc(void) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookRealloc AllocFreeHookGetReallocFnc(void) CPPUTILS_NOEXCEPT
 {
     return s_realloc_user;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookFree AllocFreeHookGetFreeFnc(void) CPPUTILS_NOEXCEPT
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookFree AllocFreeHookGetFreeFnc(void) CPPUTILS_NOEXCEPT
 {
     return s_free_user;
 }
@@ -388,4 +388,4 @@ CPPUTILS_END_C
 
 
 #endif  //  #ifndef _WIN32
-#endif  //  #ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#endif  //  #ifdef PROGS_INVEST_ALLOC_FREE_HOOK_USED

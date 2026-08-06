@@ -1,16 +1,17 @@
 //
-// file:			alloc_free_hook.h
-// path:			include/allocfreehook/alloc_free_hook.h
+// repo:            progs_invest
+// file:			mem_leak_invest.h
+// path:			include/progs_invest/mem_leak_invest.h
 // created on:		2023 Mar 08
-// created by:		Davit Kalantaryan (davit.kalantaryan@gmail.com)
+// created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
 
-#ifndef ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_MEM_LEAK_INVEST_H
-#define ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_MEM_LEAK_INVEST_H
+#ifndef PROGS_INVEST_INCLUDE_PROGS_INVEST_MEM_LEAK_INVEST_H
+#define PROGS_INVEST_INCLUDE_PROGS_INVEST_MEM_LEAK_INVEST_H
 
 #include <progs_invest/internal_header.h>
 
-#ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#ifdef PROGS_INVEST_MEM_LEAK_INVEST_USED
 
 #include <progs_invest/export_symbols.h>
 #include <progs_invest/stack_calcs.h>
@@ -38,16 +39,16 @@ typedef void (*TypeProgsInvestMemLeakInvestClbk)(const struct SProgramsInvesigat
                                                  void** a_pDataForCurThread);
 
 
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT;
-ALLOCFREEHOOK_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT;
+PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT;
 
 
 CPPUTILS_END_C
 
 
-#endif  //  #ifdef PROGRAMS_INVEST_ALLOC_FREE_HOOK_USED
+#endif  //  #ifdef PROGS_INVEST_MEM_LEAK_INVEST_USED
 
-#endif  // #ifndef ALLOCFREEHOOK_INCLUDE_ALLOCFREEHOOK_MEM_LEAK_INVEST_H
+#endif  // #ifndef PROGS_INVEST_INCLUDE_PROGS_INVEST_MEM_LEAK_INVEST_H
