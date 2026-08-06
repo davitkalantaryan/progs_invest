@@ -260,6 +260,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\contrib\cutils\src\core\cutils_core_replace_function_windows.c" />
     <ClCompile Include="..\..\..\src\core\alloc_free_hook\progs_invest_alloc_free_hook_unix.cpp" />
     <ClCompile Include="..\..\..\src\core\alloc_free_hook\progs_invest_alloc_free_hook_unix_helper_with_includes.cpp" />
     <ClCompile Include="..\..\..\src\core\alloc_free_hook\progs_invest_alloc_free_hook_windows.cpp" />

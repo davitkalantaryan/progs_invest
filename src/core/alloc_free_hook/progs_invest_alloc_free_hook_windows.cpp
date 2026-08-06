@@ -1,13 +1,15 @@
 //
-// file:			alloc_free_hook_core_alloc_free_hook_windows.cpp
-// path:			src/core/alloc_free_hook/windows/alloc_free_hook_core_alloc_free_hook_windows.cpp
+// repo:            progs_invest
+// file:			progs_invest_alloc_free_hook_windows.cpp
+// path:			src/core/alloc_free_hook/progs_invest_alloc_free_hook_windows.cpp
 // created on:		2023 Mar 08
-// created by:		Davit Kalantaryan (davit.kalantaryan@gmail.com)
+// created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
 
-#include <cinternal/internal_header.h>
+#include <progs_invest/internal_header.h>
 
 
+#ifdef PROGS_INVEST_ALLOC_FREE_HOOK_USED
 #ifdef _WIN32
 
 
@@ -24,9 +26,9 @@ CPPUTILS_BEGIN_C
 #define CInternalReplaceFunctionsMac	CInternalReplaceFunctionsAllModules
 
 typedef HMODULE (WINAPI *TypeLoadLibraryA)(LPCSTR lpLibFileName);
-typedef HMODULE (WINAPI *TypeLoadLibraryW)(LPWSTR lpLibFileName);
+typedef HMODULE (WINAPI *TypeLoadLibraryW)(LPCWSTR lpLibFileName);
 typedef HMODULE (WINAPI *TypeLoadLibraryExA)(LPCSTR lpLibFileName,HANDLE hFile,DWORD  dwFlags);
-typedef HMODULE (WINAPI *TypeLoadLibraryExW)(LPWSTR lpLibFileName, HANDLE hFile, DWORD  dwFlags);
+typedef HMODULE (WINAPI *TypeLoadLibraryExW)(LPCWSTR lpLibFileName, HANDLE hFile, DWORD  dwFlags);
 
 
 static int s_nIsInited = 0;
@@ -198,6 +200,12 @@ static inline void alloc_free_hook_initialize_inline(void) {
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void ProgramsInvestigatorAllocFreeHookInitLibraryIfNotInited(void) CPPUTILS_NOEXCEPT
+{
+    alloc_free_hook_initialize_inline();
+}
+
+
 PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibMalloc(size_t a_size)
 {
 	return (*s_malloc_c_lib)(a_size);
@@ -341,3 +349,4 @@ CPPUTILS_END_C
 
 
 #endif  //  #ifdef _WIN32
+#endif  //  #ifdef PROGS_INVEST_ALLOC_FREE_HOOK_USED

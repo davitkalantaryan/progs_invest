@@ -1,6 +1,7 @@
 //
-// file:			alloc_free_hook_core_alloc_free_hook_unix.c
-// path:			src/core/alloc_free_hook_core_alloc_free_hook_unix.c
+// repo:            progs_invest
+// file:			progs_invest_mem_leak_invest.cpp
+// path:			src/core/mem_leak_invest/progs_invest_mem_leak_invest.cpp
 // created on:		2023 Mar 14
 // created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
@@ -191,7 +192,7 @@ static inline void ProgsInvestMemLeakIestInitInline(void) CPPUTILS_NOEXCEPT {
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NOEXCEPT
 {
     struct SProgsInvestMemLeakInvestTls* pTls;
     ProgsInvestMemLeakIestInitInline();
@@ -200,7 +201,7 @@ ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestSkipThisStack(void)CPPUTILS_NO
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_NOEXCEPT
 {
     struct SProgsInvestMemLeakInvestTls* pTls;
     ProgsInvestMemLeakIestInitInline();
@@ -209,14 +210,14 @@ ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestUnskipThisStack(void)CPPUTILS_
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestSetMaxAllocsForEvent(int a_maxAllocs)CPPUTILS_NOEXCEPT
 {
     ProgsInvestMemLeakIestInitInline();
     s_dt.maxAllocs = a_maxAllocs;
 }
 
 
-ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMemLeakInvestClbk a_clbk, void* a_pUserData)CPPUTILS_NOEXCEPT
 {
     ProgsInvestMemLeakIestInitInline();
     s_pUserData = a_pUserData;
@@ -224,7 +225,7 @@ ALLOCFREEHOOK_EXPORT void ProgsInvestMemLeakInvestRegisterClbk(TypeProgsInvestMe
 }
 
 
-ALLOCFREEHOOK_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT
+PROGSINVEST_MEMLEAKINVEST_EXPORT const struct SProgsInvestMemLeakInvestStat* ProgsInvestMemLeakInvestMemData(void)CPPUTILS_NOEXCEPT
 {
     ProgsInvestMemLeakIestInitInline();
     return &s_dt;

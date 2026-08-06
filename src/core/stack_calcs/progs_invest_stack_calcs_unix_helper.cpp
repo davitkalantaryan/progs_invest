@@ -1,4 +1,10 @@
-
+//
+// repo:            progs_invest
+// file:			progs_invest_stack_calcs_unix_helper.cpp
+// path:			src/core/stack_calcs/progs_invest_stack_calcs_unix_helper.cpp
+// created on:		2023 Mar 14
+// created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
+//
 
 #include <progs_invest/internal_header.h>
 

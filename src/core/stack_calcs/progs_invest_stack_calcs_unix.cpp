@@ -1,6 +1,7 @@
 //
-// file:			alloc_free_hook_core_alloc_free_hook_unix.c
-// path:			src/core/alloc_free_hook_core_alloc_free_hook_unix.c
+// repo:            progs_invest
+// file:			progs_invest_stack_calcs_unix.cpp
+// path:			src/core/stack_calcs/progs_invest_stack_calcs_unix.cpp
 // created on:		2023 Mar 14
 // created by:		Davit Kalantaryan (davit.kalantaryan@desy.de)
 //
