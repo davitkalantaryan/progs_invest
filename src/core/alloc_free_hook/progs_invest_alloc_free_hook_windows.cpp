@@ -12,8 +12,10 @@
 
 
 #include <progs_invest/alloc_free_hook.h>
-#include <cinternal/replace_function_sys.h>
+#include <cutils/replace_function_sys.h>
+#include <cinternal/disable_compiler_warnings.h>
 #include <stdlib.h>
+#include <cinternal/undisable_compiler_warnings.h>
 
 
 CPPUTILS_BEGIN_C
@@ -196,25 +198,25 @@ static inline void alloc_free_hook_initialize_inline(void) {
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibMalloc(size_t a_size)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibMalloc(size_t a_size)
 {
 	return (*s_malloc_c_lib)(a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibCalloc(size_t a_nmemb, size_t a_size)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibCalloc(size_t a_nmemb, size_t a_size)
 {
 	return (*s_calloc_c_lib)(a_nmemb, a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibRealloc(void* a_ptr, size_t a_size)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void* AllocFreeHookCLibRealloc(void* a_ptr, size_t a_size)
 {
 	return (*s_realloc_c_lib)(a_ptr, a_size);
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr)
 {
 	(*s_free_c_lib)(a_ptr);
 }
@@ -222,28 +224,28 @@ ALLOCFREEHOOK_EXPORT void AllocFreeHookCLibFree(void* a_ptr)
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetMallocFnc(TypeAllocFreeHookMalloc a_malloc)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetMallocFnc(TypeAllocFreeHookMalloc a_malloc)
 {
 	alloc_free_hook_initialize_inline();
 	g_malloc = a_malloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetCallocFnc(TypeAllocFreeHookCalloc a_calloc)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetCallocFnc(TypeAllocFreeHookCalloc a_calloc)
 {
 	alloc_free_hook_initialize_inline();
 	g_calloc = a_calloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetReallocFnc(TypeAllocFreeHookRealloc a_realloc)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetReallocFnc(TypeAllocFreeHookRealloc a_realloc)
 {
 	alloc_free_hook_initialize_inline();
 	g_realloc = a_realloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free)
 {
 	alloc_free_hook_initialize_inline();
 	g_free = a_free;
@@ -252,25 +254,25 @@ ALLOCFREEHOOK_EXPORT void AllocFreeHookSetFreeFnc(TypeAllocFreeHookFree a_free)
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookMalloc AllocFreeHookGetMallocFnc(void)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookMalloc AllocFreeHookGetMallocFnc(void)
 {
 	return g_malloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookCalloc AllocFreeHookGetCallocFnc(void)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookCalloc AllocFreeHookGetCallocFnc(void)
 {
 	return g_calloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookRealloc AllocFreeHookGetReallocFnc(void)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookRealloc AllocFreeHookGetReallocFnc(void)
 {
 	return g_realloc;
 }
 
 
-ALLOCFREEHOOK_EXPORT TypeAllocFreeHookFree AllocFreeHookGetFreeFnc(void)
+PROGSINVEST_ALLOCFREEHOOK_EXPORT TypeAllocFreeHookFree AllocFreeHookGetFreeFnc(void)
 {
 	return g_free;
 }
