@@ -211,7 +211,7 @@ typedef DWORD  DWORD_ci;
 #endif
 
 
-static inline char* ProgramsInvestigatorStackStrdup(const char* CPPUTILS_ARG_NN a_src, ULONG a_strLen, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT  {
+static inline char* ProgramsInvestigatorStackStrdup(const char* CPPUTILS_ARG_NN a_src, size_t a_strLen, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT  {
     const size_t strLenPlus1 = (size_t)(a_strLen + 1);
     char* const pRet = (char*)((*a_malloc)(sizeof(char) * strLenPlus1));
     if (pRet) {
@@ -230,7 +230,7 @@ static inline void ProgramsInvestigatorStackGetFunctionNameInlineNoLock(struct S
     pSymbol->MaxNameLen = MAX_SYM_NAME;
 
     if (SymFromAddr(s_currentProcess, a_dwAddres, &dwDisplacement, pSymbol)) {
-        a_pStackItem->publ.functionName = ProgramsInvestigatorStackStrdup(pSymbol->Name,pSymbol->NameLen, a_pStackItem->m_malloc);
+        a_pStackItem->publ.functionName = ProgramsInvestigatorStackStrdup(pSymbol->Name,(size_t)(pSymbol->NameLen), a_pStackItem->m_malloc);
     }
     else {
         a_pStackItem->publ.functionName = ProgramsInvestigatorStackStrdup(PROGS_INVEST_UNKNOWN_NAME_STR, PROGS_INVEST_UNKNOWN_NAME_LEN, a_pStackItem->m_malloc);
@@ -248,7 +248,7 @@ static inline void ProgramsInvestigatorStackGetSourceInfoInlineNoLock(struct SPr
 
     if (SymGetLineFromAddr64(s_currentProcess, a_dwAddres, &dwDisplacement, &line)) {
         if (line.FileName) {
-            a_pStackItem->publ.sourceFile = ProgramsInvestigatorStackStrdup(line.FileName,(ULONG)strlen(line.FileName),a_pStackItem->m_malloc);
+            a_pStackItem->publ.sourceFile = ProgramsInvestigatorStackStrdup(line.FileName,strlen(line.FileName),a_pStackItem->m_malloc);
         }
         else {
             a_pStackItem->publ.sourceFile = ProgramsInvestigatorStackStrdup(PROGS_INVEST_UNKNOWN_NAME_STR, PROGS_INVEST_UNKNOWN_NAME_LEN, a_pStackItem->m_malloc);
@@ -268,7 +268,7 @@ static inline void ProgramsInvestigatorStackGetModuleInfoInlineNoLock(struct SPr
     aModuleInfo.SizeOfStruct = sizeof(IMAGEHLP_MODULE);
 
     if (SymGetModuleInfo(s_currentProcess, a_dwAddres, &aModuleInfo)) {
-        a_pStackItem->publ.moduleName = ProgramsInvestigatorStackStrdup(aModuleInfo.ImageName, (ULONG)strlen(aModuleInfo.ImageName), a_pStackItem->m_malloc);
+        a_pStackItem->publ.moduleName = ProgramsInvestigatorStackStrdup(aModuleInfo.ImageName, strlen(aModuleInfo.ImageName), a_pStackItem->m_malloc);
     }
     else {
         a_pStackItem->publ.moduleName = ProgramsInvestigatorStackStrdup(PROGS_INVEST_UNKNOWN_NAME_STR, PROGS_INVEST_UNKNOWN_NAME_LEN, a_pStackItem->m_malloc);
@@ -343,13 +343,13 @@ PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackItemResolvedClean(co
 }
 
 
-PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT
 {
     int i;
     const struct SProgramsInvesigatorStackItemResolved* pItem;
 
     for (i = 0; i < (a_stack->numberOfFrames); ++i) {
-        pItem = ProgramsInvestigatorStackItemResolved(a_stack, CPPUTILS_NULL, CPPUTILS_STATIC_CAST(size_t, i));
+        pItem = ProgramsInvestigatorStackItemResolved(a_stack, a_malloc, CPPUTILS_STATIC_CAST(size_t, i));
         if (pItem) {
             CinternalLoggerMakeLogOnlyText(0,
                 "    fl: \"%s\", ln: %d, fn: %s\n",

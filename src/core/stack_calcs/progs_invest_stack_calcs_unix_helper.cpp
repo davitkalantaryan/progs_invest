@@ -15,7 +15,9 @@
 #define _GNU_SOURCE
 #endif
 
+#include <progs_invest/stack_calcs.h>
 #include <cinternal/logger.h>
+#include <cinternal/disable_compiler_warnings.h>
 #include <dlfcn.h>
 #include <elf.h>
 #include <execinfo.h>
@@ -28,6 +30,30 @@
 #include <cstring>
 #include <limits.h>
 #include <string>
+#include <cinternal/undisable_compiler_warnings.h>
+
+
+static void printBacktraceSourceLinesStatic(void* const* frames, int count);
+static bool ParseSourceLocationBasicStatic(void* a_frame, struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_pItem, TypeAllocFreeHookMalloc a_malloc);
+
+CPPUTILS_BEGIN_C
+
+
+CPPUTILS_DLL_PRIVATE void PrintBacktraceSourceLines(void* const* frames, int count, TypeAllocFreeHookMalloc a_malloc)
+{
+    (void)a_malloc;
+    printBacktraceSourceLinesStatic(frames,count);
+}
+
+
+CPPUTILS_DLL_PRIVATE bool ParseSourceLocationBasic(void* a_frame, struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_pItem, TypeAllocFreeHookMalloc a_malloc)
+{
+    return ParseSourceLocationBasicStatic(a_frame,a_pItem,a_malloc);
+}
+
+
+CPPUTILS_END_C
+
 
 // Resolve relative executable/library names such as "./my_program".
 static std::string absolutePath(const char* path)
@@ -65,9 +91,7 @@ static uintptr_t addressForAddr2Line(uintptr_t pc, const Dl_info& info)
     return pc;
 }
 
-static std::string runAddr2Line(
-    const std::string& objectFile,
-    uintptr_t address)
+static std::string runAddr2Line(const std::string& objectFile,uintptr_t address)
 {
     char addressText[2 + sizeof(uintptr_t) * 2 + 1];
 
@@ -121,8 +145,7 @@ static std::string runAddr2Line(
     char buffer[4096];
 
     for (;;) {
-        const ssize_t result =
-            ::read(outputPipe[0], buffer, sizeof(buffer));
+        const ssize_t result = ::read(outputPipe[0], buffer, sizeof(buffer));
 
         if (result > 0) {
             output.append(buffer, static_cast<size_t>(result));
@@ -142,8 +165,7 @@ static std::string runAddr2Line(
     while (::waitpid(pid, &status, 0) == -1 && errno == EINTR) {
     }
 
-    while (!output.empty() &&
-           (output.back() == '\n' || output.back() == '\r')) {
+    while (!output.empty() && (output.back() == '\n' || output.back() == '\r')) {
         output.pop_back();
     }
 
@@ -157,7 +179,8 @@ static std::string runAddr2Line(
     return output;
 }
 
-void printBacktraceSourceLines(void* const* frames, int count)
+
+static void printBacktraceSourceLinesStatic(void* const* frames, int count)
 {
     // Optional fallback representation.
     char** fallbackSymbols = ::backtrace_symbols(frames, count);
@@ -184,11 +207,8 @@ void printBacktraceSourceLines(void* const* frames, int count)
         }
 
         const std::string objectFile = absolutePath(info.dli_fname);
-        const uintptr_t objectAddress =
-            addressForAddr2Line(pc, info);
-
-        const std::string source =
-            runAddr2Line(objectFile, objectAddress);
+        const uintptr_t objectAddress = addressForAddr2Line(pc, info);
+        const std::string source = runAddr2Line(objectFile, objectAddress);
 
         CinternalLoggerMakeLogOnlyText(0,
             "#%-2d %p  %s(+0x%lx)\n"
@@ -203,6 +223,105 @@ void printBacktraceSourceLines(void* const* frames, int count)
     CinternalLoggerMakeLog(0, "", "", 0, "", CinternalLogTypeFinalize, CinternalLogCategoryNone, "\n");
 
     std::free(fallbackSymbols);
+}
+
+
+struct SourceLocation
+{
+    std::string functionName;
+    std::string sourceFile;
+    int lineNumber = 0;
+};
+
+
+static inline bool ParseSourceLocationBasicInline(const char* text, SourceLocation& result)
+{
+    if (!text) {
+        return false;
+    }
+
+    const std::string str(text);
+
+    // Separate function name from source location.
+    const std::size_t atPos = str.rfind(" at ");
+    if (atPos == std::string::npos) {
+        return false;
+    }
+
+    // Last ':' separates filename from line number.
+    const std::size_t colonPos = str.rfind(':');
+    if (colonPos == std::string::npos || colonPos <= atPos + 4) {
+        return false;
+    }
+
+    result.functionName = str.substr(0, atPos);
+    result.sourceFile =
+        str.substr(atPos + 4, colonPos - (atPos + 4));
+
+    const char* lineStr = str.c_str() + colonPos + 1;
+    char* end = nullptr;
+
+    const long line = std::strtol(lineStr, &end, 10);
+
+    if (end == lineStr || *end != '\0' || line <= 0) {
+        return false;
+    }
+
+    result.lineNumber = static_cast<int>(line);
+
+    return true;
+}
+
+
+static inline char* ProgramsInvestigatorStackStrdup(const char* CPPUTILS_ARG_NN a_src, size_t a_strLen, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT  {
+    const size_t strLenPlus1 = (size_t)(a_strLen + 1);
+    char* const pRet = (char*)((*a_malloc)(sizeof(char) * strLenPlus1));
+    if (pRet) {
+        memcpy(pRet, a_src, strLenPlus1);
+    }
+    return pRet;
+}
+
+
+static inline char* ProgramsInvestigatorStackStrdupCpp(const ::std::string& a_src, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT  {
+    return ProgramsInvestigatorStackStrdup(a_src.c_str(),a_src.size(),a_malloc);
+}
+
+
+static bool ParseSourceLocationBasicStatic(void* a_frame, struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_pItem, TypeAllocFreeHookMalloc a_malloc)
+{
+    uintptr_t pc = reinterpret_cast<uintptr_t>(a_frame);
+
+    /*
+         * backtrace() normally returns return addresses. Subtracting one byte
+         * makes addr2line resolve the calling instruction rather than the
+         * instruction immediately after it.
+         */
+    if (pc != 0)
+        --pc;
+
+    Dl_info info{};
+
+    if (::dladdr(reinterpret_cast<void*>(pc), &info) == 0) {
+        return false;
+    }
+
+    const std::string objectFile = absolutePath(info.dli_fname);
+    const uintptr_t objectAddress = addressForAddr2Line(pc, info);
+    const std::string source = runAddr2Line(objectFile, objectAddress);
+
+    SourceLocation result;
+    if(!ParseSourceLocationBasicInline(source.c_str(),result)){
+        return false;
+    }
+
+    a_pItem->moduleName = ProgramsInvestigatorStackStrdupCpp(objectFile,a_malloc);
+    a_pItem->functionName = ProgramsInvestigatorStackStrdupCpp(result.functionName,a_malloc);
+    a_pItem->sourceFile = ProgramsInvestigatorStackStrdupCpp(result.sourceFile,a_malloc);
+    a_pItem->lineNumber = result.lineNumber;
+    a_pItem->reserved01 = 0;
+
+    return true;
 }
 
 

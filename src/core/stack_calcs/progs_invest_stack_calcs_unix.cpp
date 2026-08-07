@@ -21,11 +21,14 @@
 #include <stdio.h>
 #include <cinternal/undisable_compiler_warnings.h>
 
-void printBacktraceSourceLines(void* const* frames, int count);
 
 CPPUTILS_BEGIN_C
 
 #define PROGRAMS_INVEST_MAX_STACK   8192
+
+
+CPPUTILS_DLL_PRIVATE void PrintBacktraceSourceLines(void* const* frames, int count, TypeAllocFreeHookMalloc a_malloc);
+CPPUTILS_DLL_PRIVATE bool ParseSourceLocationBasic(void* a_frame, struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_pItem, TypeAllocFreeHookMalloc a_malloc);
 
 
 struct SProgramsInvesigatorStack{
@@ -33,6 +36,15 @@ struct SProgramsInvesigatorStack{
     int                     reserved01;
     void**                  ppFrames;
     TypeAllocFreeHookFree   m_free;
+};
+
+
+struct SProgramsInvesigatorStackItemResolvedPrivate {
+    struct SProgramsInvesigatorStackItemResolved    publ;
+    TypeAllocFreeHookMalloc                         m_malloc;
+    const struct SProgramsInvesigatorStack*         stack;
+    int                                             indInStack;
+    int                                             reserved02;
 };
 
 
@@ -134,7 +146,6 @@ PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestig
     }
 
     pRetData->m_free = a_stack->m_free;
-    pRetData->hash = a_stack->hash;
     pRetData->numberOfFrames = a_stack->numberOfFrames;
     pRetData->reserved01 = a_stack->reserved01;
     memcpy(pRetData->ppFrames, a_stack->ppFrames, CPPUTILS_STATIC_CAST(size_t, pRetData->numberOfFrames) * sizeof(void*));
@@ -160,7 +171,6 @@ PROGSINVEST_STACKCALCS_EXPORT size_t ProgramsInvestigatorStackSize(const struct 
 PROGSINVEST_STACKCALCS_EXPORT const struct SProgramsInvesigatorStackItemResolved* ProgramsInvestigatorStackItemResolved(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack, TypeAllocFreeHookMalloc a_malloc, size_t a_frameNum) CPPUTILS_NOEXCEPT
 {
     void* pFrame;
-    DWORD_ci  dwAddress;
     struct SProgramsInvesigatorStackItemResolvedPrivate* pRetData;
     const TypeAllocFreeHookMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
     const int frameNum = CPPUTILS_STATIC_CAST(int, a_frameNum);
@@ -185,15 +195,14 @@ PROGSINVEST_STACKCALCS_EXPORT const struct SProgramsInvesigatorStackItemResolved
     pRetData->reserved02 = 0;
 
     pFrame = a_stack->ppFrames[frameNum];
-    dwAddress = CPPUTILS_STATIC_CAST(DWORD_ci, CPPUTILS_REINTERPRET_CAST(size_t, pFrame));
 
-    cinternal_lw_recursive_mutex_lock(&s_mutex_for_dbg_functions);
-    ProgramsInvestigatorStackGetFunctionNameInlineNoLock(pRetData, dwAddress);
-    ProgramsInvestigatorStackGetSourceInfoInlineNoLock(pRetData, dwAddress);
-    ProgramsInvestigatorStackGetModuleInfoInlineNoLock(pRetData, dwAddress);
-    cinternal_lw_recursive_mutex_unlock(&s_mutex_for_dbg_functions);
+    if(ParseSourceLocationBasic(pFrame,&(pRetData->publ),aMalloc)){
+        return &(pRetData->publ);
+    }
 
-    return &(pRetData->publ);
+    (*(a_stack->m_free))(pRetData);
+
+    return CPPUTILS_NULL;
 
 }
 
@@ -224,15 +233,18 @@ PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackItemResolvedClean(co
 }
 
 
-PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT
 {
+    const TypeAllocFreeHookMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
+
     //char** strings = backtrace_symbols(a_stack->ppFrames, a_stack->numberOfFrames);
     //if(strings){
     //    int j;
     //    for (j = 0; j < (a_stack->numberOfFrames); j++)
     //        printf("%s\n", strings[j]);
     //}
-    printBacktraceSourceLines(a_stack->ppFrames,a_stack->numberOfFrames);
+
+    PrintBacktraceSourceLines(a_stack->ppFrames,a_stack->numberOfFrames,aMalloc);
 }
 
 

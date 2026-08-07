@@ -8,6 +8,8 @@
 
 #include <cinternal/internal_header.h>
 #include <progs_invest/mem_leak_invest.h>
+#include <progs_invest/alloc_free_hook.h>
+#include <cinternal/logger.h>
 #include <cinternal/disable_compiler_warnings.h>
 #include <stdlib.h>
 #include <cinternal/undisable_compiler_warnings.h>
@@ -33,6 +35,12 @@ static void ProgsInvestMemLeakInvestClbk(const struct SProgramsInvesigatorStack*
 {   
     (void)a_pUserData;
     (void)a_pDataForCurThread;
-    ProgramsInvestigatorStackPrint(a_curStack);
+    ProgramsInvestigatorStackPrint(a_curStack,&AllocFreeHookCLibMalloc);
+    const struct SProgramsInvesigatorStackItemResolved* pThirdFrame = ProgramsInvestigatorStackItemResolved(a_curStack,&AllocFreeHookCLibMalloc,2);
+    if(pThirdFrame){
+        CInternalLogDebug("moduleName=%s, functionName=%s, sourceFile=%s, line=%d",
+                          pThirdFrame->moduleName,pThirdFrame->functionName,pThirdFrame->sourceFile,pThirdFrame->lineNumber);
+        ProgramsInvestigatorStackItemResolvedClean(pThirdFrame);
+    }
     exit(1);
 }

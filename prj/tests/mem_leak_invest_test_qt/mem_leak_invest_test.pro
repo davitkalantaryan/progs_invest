@@ -18,3 +18,5 @@ SOURCES += $$files($${progsInvestRepoRoot}/src/core/*.cpp,true)
 SOURCES += $$files($${progsInvestRepoRoot}/src/core/*.c,true)
 SOURCES += "$${cinternalRepoRoot}/src/core/cinternal_core_hash.c"
 SOURCES += "$${cinternalRepoRoot}/src/core/cinternal_core_logger.c"
+
+HEADERS += $$files($${progsInvestRepoRoot}/include/*.h,true)
