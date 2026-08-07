@@ -31,7 +31,8 @@ int main()
 
 static void ProgsInvestMemLeakInvestClbk(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_curStack, void* a_pUserData, void** a_pDataForCurThread)
 {   
-    (void)a_curStack;
     (void)a_pUserData;
     (void)a_pDataForCurThread;
+    ProgramsInvestigatorStackPrint(a_curStack);
+    exit(1);
 }

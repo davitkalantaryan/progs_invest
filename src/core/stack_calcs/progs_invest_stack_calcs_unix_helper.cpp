@@ -200,6 +200,8 @@ void printBacktraceSourceLines(void* const* frames, int count)
             source.c_str());
     }
 
+    CinternalLoggerMakeLog(0, "", "", 0, "", CinternalLogTypeFinalize, CinternalLogCategoryNone, "\n");
+
     std::free(fallbackSymbols);
 }
 

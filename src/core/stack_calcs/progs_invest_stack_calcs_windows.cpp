@@ -354,8 +354,11 @@ PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct S
             CinternalLoggerMakeLogOnlyText(0,
                 "    fl: \"%s\", ln: %d, fn: %s\n",
                 pItem->sourceFile, pItem->lineNumber, pItem->functionName);
+            ProgramsInvestigatorStackItemResolvedClean(pItem);
         }  //  if (pItem) {
     }  //  for (i = 0; i < (a_stack->numberOfFrames); ++i) {
+
+    CinternalLoggerMakeLog(0, "", "", 0, "", CinternalLogTypeFinalize, CinternalLogCategoryNone, "\n");
 }
 
 
