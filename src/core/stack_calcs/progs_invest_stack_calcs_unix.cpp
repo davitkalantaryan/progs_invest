@@ -119,6 +119,111 @@ PROGSINVEST_STACKCALCS_EXPORT bool ProgramsInvestigatorStackAreSame(const struct
 }
 
 
+PROGSINVEST_STACKCALCS_EXPORT struct SProgramsInvesigatorStack* ProgramsInvestigatorStackCopy(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack, TypeAllocFreeHookMalloc a_malloc) CPPUTILS_NOEXCEPT
+{
+    const TypeAllocFreeHookMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
+    struct SProgramsInvesigatorStack* const pRetData = (struct SProgramsInvesigatorStack*)((*aMalloc)(sizeof(struct SProgramsInvesigatorStack)));
+    if (!pRetData) {
+        return CPPUTILS_NULL;
+    }
+
+    pRetData->ppFrames = (void**)((*aMalloc)(sizeof(void*) * ((size_t)(a_stack->numberOfFrames))));
+    if (!(pRetData->ppFrames)) {
+        (*(a_stack->m_free))(pRetData);
+        return CPPUTILS_NULL;
+    }
+
+    pRetData->m_free = a_stack->m_free;
+    pRetData->hash = a_stack->hash;
+    pRetData->numberOfFrames = a_stack->numberOfFrames;
+    pRetData->reserved01 = a_stack->reserved01;
+    memcpy(pRetData->ppFrames, a_stack->ppFrames, CPPUTILS_STATIC_CAST(size_t, pRetData->numberOfFrames) * sizeof(void*));
+    return pRetData;
+}
+
+
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackSwap(struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack1, struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack2) CPPUTILS_NOEXCEPT
+{
+    struct SProgramsInvesigatorStack tmpStack;
+    memcpy(&tmpStack, a_stack1, sizeof(struct SProgramsInvesigatorStack));
+    memcpy(a_stack1, a_stack2, sizeof(struct SProgramsInvesigatorStack));
+    memcpy(a_stack2, &tmpStack, sizeof(struct SProgramsInvesigatorStack));
+}
+
+
+PROGSINVEST_STACKCALCS_EXPORT size_t ProgramsInvestigatorStackSize(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
+{
+    return CPPUTILS_STATIC_CAST(size_t, a_stack->numberOfFrames);
+}
+
+
+PROGSINVEST_STACKCALCS_EXPORT const struct SProgramsInvesigatorStackItemResolved* ProgramsInvestigatorStackItemResolved(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack, TypeAllocFreeHookMalloc a_malloc, size_t a_frameNum) CPPUTILS_NOEXCEPT
+{
+    void* pFrame;
+    DWORD_ci  dwAddress;
+    struct SProgramsInvesigatorStackItemResolvedPrivate* pRetData;
+    const TypeAllocFreeHookMalloc aMalloc = a_malloc ? a_malloc : (&ProgramsInvestStackCalcDefaultMalloc);
+    const int frameNum = CPPUTILS_STATIC_CAST(int, a_frameNum);
+
+    if ((frameNum < 0) || (frameNum > (a_stack->numberOfFrames))) {
+        return CPPUTILS_NULL;
+    }
+
+    pRetData = (struct SProgramsInvesigatorStackItemResolvedPrivate*)((*aMalloc)(sizeof(struct SProgramsInvesigatorStackItemResolvedPrivate) * ((size_t)(a_stack->numberOfFrames))));
+    if (!pRetData) {
+        return CPPUTILS_NULL;
+    }
+
+    pRetData->publ.moduleName = CPPUTILS_NULL;
+    pRetData->publ.functionName = CPPUTILS_NULL;
+    pRetData->publ.sourceFile = CPPUTILS_NULL;
+    pRetData->publ.lineNumber = -1;
+    pRetData->publ.reserved01 = 0;
+    pRetData->m_malloc = aMalloc;
+    pRetData->stack = a_stack;
+    pRetData->indInStack = frameNum;
+    pRetData->reserved02 = 0;
+
+    pFrame = a_stack->ppFrames[frameNum];
+    dwAddress = CPPUTILS_STATIC_CAST(DWORD_ci, CPPUTILS_REINTERPRET_CAST(size_t, pFrame));
+
+    cinternal_lw_recursive_mutex_lock(&s_mutex_for_dbg_functions);
+    ProgramsInvestigatorStackGetFunctionNameInlineNoLock(pRetData, dwAddress);
+    ProgramsInvestigatorStackGetSourceInfoInlineNoLock(pRetData, dwAddress);
+    ProgramsInvestigatorStackGetModuleInfoInlineNoLock(pRetData, dwAddress);
+    cinternal_lw_recursive_mutex_unlock(&s_mutex_for_dbg_functions);
+
+    return &(pRetData->publ);
+
+}
+
+
+static inline struct SProgramsInvesigatorStackItemResolvedPrivate* ProgramsInvestigatorStackGetPrivItemFromPubl(const struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_stackItem) CPPUTILS_NOEXCEPT {
+    struct SProgramsInvesigatorStackItemResolvedPrivate* const pRet = (struct SProgramsInvesigatorStackItemResolvedPrivate*)a_stackItem;
+    return pRet;
+}
+
+
+PROGSINVEST_STACKCALCS_EXPORT const struct SProgramsInvesigatorStackItemResolved* ProgramsInvestigatorStackItemResolvedNext(const struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_stackItem) CPPUTILS_NOEXCEPT
+{
+    struct SProgramsInvesigatorStackItemResolvedPrivate* const pInpData = ProgramsInvestigatorStackGetPrivItemFromPubl(a_stackItem);
+    return ProgramsInvestigatorStackItemResolved(pInpData->stack, pInpData->m_malloc, CPPUTILS_STATIC_CAST(size_t, pInpData->indInStack + 1));
+}
+
+
+PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackItemResolvedClean(const struct SProgramsInvesigatorStackItemResolved* CPPUTILS_ARG_NN a_stackItem) CPPUTILS_NOEXCEPT
+{
+    if (a_stackItem) {
+        struct SProgramsInvesigatorStackItemResolvedPrivate* const pInpData = ProgramsInvestigatorStackGetPrivItemFromPubl(a_stackItem);
+        const TypeAllocFreeHookFree aFree = pInpData->stack->m_free;
+        (*aFree)((void*)pInpData->publ.moduleName);
+        (*aFree)((void*)pInpData->publ.functionName);
+        (*aFree)((void*)pInpData->publ.sourceFile);
+        (*aFree)(pInpData);
+    }  //  if (a_stackItem) {
+}
+
+
 PROGSINVEST_STACKCALCS_EXPORT void ProgramsInvestigatorStackPrint(const struct SProgramsInvesigatorStack* CPPUTILS_ARG_NN a_stack) CPPUTILS_NOEXCEPT
 {
     //char** strings = backtrace_symbols(a_stack->ppFrames, a_stack->numberOfFrames);
